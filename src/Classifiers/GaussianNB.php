@@ -253,7 +253,7 @@ class GaussianNB implements Estimator, Learner, Online, Probabilistic, Persistab
 
         $maxVariance = 0.0;
 
-        foreach ($dataset->stratify() as $class => $stratum) {
+        foreach ($dataset->stratifyByLabel() as $class => $stratum) {
             if (isset($this->means[$class])) {
                 $oldMeans = $this->means[$class];
                 $oldVariances = $this->variances[$class];
@@ -358,7 +358,7 @@ class GaussianNB implements Estimator, Learner, Online, Probabilistic, Persistab
      *
      * @param \Rubix\ML\Datasets\Dataset $dataset
      * @throws \Rubix\ML\Exceptions\RuntimeException
-     * @return list<float[]>
+     * @return list<array<string,float>>
      */
     public function proba(Dataset $dataset) : array
     {
@@ -398,7 +398,7 @@ class GaussianNB implements Estimator, Learner, Online, Probabilistic, Persistab
      * Calculate the joint log likelihood of a sample being a member of each class.
      *
      * @param list<int|float> $sample
-     * @return float[]
+     * @return array<string,float>
      */
     protected function jointLogLikelihood(array $sample) : array
     {

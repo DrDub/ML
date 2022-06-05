@@ -7,7 +7,7 @@ use Rubix\ML\DataType;
 use Rubix\ML\Kernels\Distance\Distance;
 use Rubix\ML\Exceptions\InvalidArgumentException;
 use Rubix\ML\Exceptions\RuntimeException;
-use Generator;
+use Traversable;
 
 use function count;
 use function get_class;
@@ -428,7 +428,7 @@ class Labeled extends Dataset
      *
      * @return self[]
      */
-    public function stratify() : array
+    public function stratifyByLabel() : array
     {
         $strata = [];
 
@@ -491,7 +491,7 @@ class Labeled extends Dataset
 
         $leftStrata = $rightStrata = [];
 
-        foreach ($this->stratify() as $stratum) {
+        foreach ($this->stratifyByLabel() as $stratum) {
             [$left, $right] = $stratum->split($ratio);
 
             $leftStrata[] = $left;
@@ -551,7 +551,7 @@ class Labeled extends Dataset
 
         $folds = [];
 
-        foreach ($this->stratify() as $stratum) {
+        foreach ($this->stratifyByLabel() as $stratum) {
             foreach ($stratum->fold($k) as $j => $fold) {
                 $folds[$j][] = $fold;
             }
@@ -570,7 +570,7 @@ class Labeled extends Dataset
      * not enough samples to fill an entire batch, then the dataset will contain
      * as many samples and labels as possible.
      *
-     * @param int $n
+     * @param positive-int $n
      * @return list<self>
      */
     public function batch(int $n = 50) : array
@@ -742,7 +742,8 @@ class Labeled extends Dataset
                 . ' but ' . count($weights) . ' given.');
         }
 
-        $numLevels = (int) round(sqrt(count($weights)));
+        /** @var positive-int $numLevels */
+        $numLevels = (int) round(sqrt(count($weights))) ?: 1;
 
         $levels = array_chunk($weights, $numLevels, true);
 
@@ -792,7 +793,7 @@ class Labeled extends Dataset
     {
         $stats = [];
 
-        foreach ($this->stratify() as $label => $stratum) {
+        foreach ($this->stratifyByLabel() as $label => $stratum) {
             $stats[$label] = $stratum->describe()->toArray();
         }
 
@@ -806,6 +807,7 @@ class Labeled extends Dataset
      * @throws \Rubix\ML\Exceptions\InvalidArgumentException
      * @return mixed[]
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset) : array
     {
         if (isset($this->samples[$offset])) {
@@ -820,7 +822,7 @@ class Labeled extends Dataset
      *
      * @return \Generator<mixed[]>
      */
-    public function getIterator() : Generator
+    public function getIterator() : Traversable
     {
         foreach ($this->samples as $i => $sample) {
             $sample[] = $this->labels[$i];

@@ -188,7 +188,7 @@ class ExtraTreeClassifier extends ExtraTree implements Estimator, Learner, Proba
      *
      * @param \Rubix\ML\Datasets\Dataset $dataset
      * @throws \Rubix\ML\Exceptions\RuntimeException
-     * @return list<float[]>
+     * @return list<array<string,float>>
      */
     public function proba(Dataset $dataset) : array
     {
@@ -213,8 +213,7 @@ class ExtraTreeClassifier extends ExtraTree implements Estimator, Learner, Proba
     }
 
     /**
-     * Terminate the branch by selecting the class outcome with the highest
-     * probability.
+     * Terminate the branch by selecting the class outcome with the highest probability.
      *
      * @param \Rubix\ML\Datasets\Labeled $dataset
      * @return \Rubix\ML\Graph\Nodes\Best
@@ -225,6 +224,7 @@ class ExtraTreeClassifier extends ExtraTree implements Estimator, Learner, Proba
 
         $counts = array_count_values($dataset->labels());
 
+        /** @var string $outcome */
         $outcome = argmax($counts);
 
         $probabilities = [];
@@ -235,9 +235,9 @@ class ExtraTreeClassifier extends ExtraTree implements Estimator, Learner, Proba
 
         $p = $counts[$outcome] / $n;
 
-        $impurity = -($p * log($p));
+        $entropy = -($p * log($p));
 
-        return new Best($outcome, $probabilities, $impurity, $n);
+        return new Best($outcome, $probabilities, $entropy, $n);
     }
 
     /**

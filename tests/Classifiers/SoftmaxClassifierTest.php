@@ -18,7 +18,7 @@ use Rubix\ML\NeuralNet\Optimizers\Adam;
 use Rubix\ML\Classifiers\SoftmaxClassifier;
 use Rubix\ML\Transformers\ZScaleStandardizer;
 use Rubix\ML\Datasets\Generators\Agglomerate;
-use Rubix\ML\CrossValidation\Metrics\Accuracy;
+use Rubix\ML\CrossValidation\Metrics\FBeta;
 use Rubix\ML\NeuralNet\CostFunctions\CrossEntropy;
 use Rubix\ML\Exceptions\InvalidArgumentException;
 use Rubix\ML\Exceptions\RuntimeException;
@@ -35,7 +35,7 @@ class SoftmaxClassifierTest extends TestCase
      *
      * @var int
      */
-    protected const TRAIN_SIZE = 300;
+    protected const TRAIN_SIZE = 384;
 
     /**
      * The number of samples in the validation set.
@@ -69,7 +69,7 @@ class SoftmaxClassifierTest extends TestCase
     protected $estimator;
 
     /**
-     * @var \Rubix\ML\CrossValidation\Metrics\Accuracy
+     * @var \Rubix\ML\CrossValidation\Metrics\FBeta
      */
     protected $metric;
 
@@ -86,7 +86,7 @@ class SoftmaxClassifierTest extends TestCase
 
         $this->estimator = new SoftmaxClassifier(10, new Adam(0.01), 1e-4, 300, 1e-4, 5, new CrossEntropy());
 
-        $this->metric = new Accuracy();
+        $this->metric = new FBeta();
 
         srand(self::RANDOM_SEED);
     }
@@ -148,7 +148,7 @@ class SoftmaxClassifierTest extends TestCase
         $expected = [
             'batch size' => 10,
             'optimizer' => new Adam(0.01),
-            'alpha' => 1e-4,
+            'l2 penalty' => 1e-4,
             'epochs' => 300,
             'min change' => 1e-4,
             'window' => 5,

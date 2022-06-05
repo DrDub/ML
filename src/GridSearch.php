@@ -6,7 +6,6 @@ use Rubix\ML\Helpers\Params;
 use Rubix\ML\Backends\Serial;
 use Rubix\ML\Datasets\Dataset;
 use Rubix\ML\Traits\LoggerAware;
-use Rubix\ML\Backends\Tasks\Task;
 use Rubix\ML\CrossValidation\KFold;
 use Rubix\ML\Traits\Multiprocessing;
 use Rubix\ML\Traits\AutotrackRevisions;
@@ -259,7 +258,7 @@ class GridSearch implements Estimator, Learner, Parallel, Verbose, Persistable
         ])->check();
 
         if ($this->logger) {
-            $this->logger->info("$this initialized");
+            $this->logger->info("Training $this");
         }
 
         $combinations = self::combine($this->params);
@@ -270,13 +269,15 @@ class GridSearch implements Estimator, Learner, Parallel, Verbose, Persistable
             /** @var \Rubix\ML\Learner $estimator */
             $estimator = new $this->class(...$params);
 
+            $task = new CrossValidate(
+                $estimator,
+                $dataset,
+                $this->validator,
+                $this->metric
+            );
+
             $this->backend->enqueue(
-                new CrossValidate(
-                    $estimator,
-                    $dataset,
-                    $this->validator,
-                    $this->metric
-                ),
+                $task,
                 [$this, 'afterScore'],
                 $estimator->params()
             );

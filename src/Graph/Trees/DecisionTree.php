@@ -10,6 +10,7 @@ use Rubix\ML\Graph\Nodes\Decision;
 use Rubix\ML\Exceptions\InvalidArgumentException;
 use Rubix\ML\Exceptions\RuntimeException;
 use IteratorAggregate;
+use Traversable;
 use Generator;
 
 use function array_pop;
@@ -142,7 +143,7 @@ abstract class DecisionTree implements BinaryTree, IteratorAggregate
 
         $this->root = $this->split($dataset);
 
-        $stack = [[$this->root, 1]];
+        $stack = [[$this->root, 0]];
 
         while ($stack) {
             [$current, $depth] = array_pop($stack);
@@ -273,7 +274,7 @@ abstract class DecisionTree implements BinaryTree, IteratorAggregate
      *
      * @return \Generator<\Rubix\ML\Graph\Nodes\Decision>
      */
-    public function getIterator() : Generator
+    public function getIterator() : Traversable
     {
         $stack = [$this->root];
 

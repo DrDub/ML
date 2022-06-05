@@ -4,7 +4,7 @@ namespace Rubix\ML\Datasets;
 
 use Rubix\ML\Kernels\Distance\Distance;
 use Rubix\ML\Exceptions\InvalidArgumentException;
-use Generator;
+use Traversable;
 
 use function count;
 use function array_slice;
@@ -303,7 +303,7 @@ class Unlabeled extends Dataset
      * not enough samples to fill an entire batch, then the dataset will contain
      * as many samples as possible.
      *
-     * @param int $n
+     * @param positive-int $n
      * @return list<self>
      */
     public function batch(int $n = 50) : array
@@ -453,6 +453,7 @@ class Unlabeled extends Dataset
                 . ' but ' . count($weights) . ' given.');
         }
 
+        /** @var positive-int $numLevels */
         $numLevels = (int) round(sqrt(count($weights)));
 
         $levels = array_chunk($weights, $numLevels, true);
@@ -499,6 +500,7 @@ class Unlabeled extends Dataset
      * @throws \Rubix\ML\Exceptions\InvalidArgumentException
      * @return mixed[]
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset) : array
     {
         if (isset($this->samples[$offset])) {
@@ -513,7 +515,7 @@ class Unlabeled extends Dataset
      *
      * @return \Generator<mixed[]>
      */
-    public function getIterator() : Generator
+    public function getIterator() : Traversable
     {
         yield from $this->samples;
     }
