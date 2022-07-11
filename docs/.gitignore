@@ -1,0 +1,11 @@
+*.tex
+*~
+*.log
+*.aux
+*.pdf
+*.toc
+half-moon-scatterplot.png
+housing-dataset-1d-histogram.png
+iris-dataset-2d-scatterplot.png
+iris-dataset-truncated-svd-embedding.png
+iris-dataset-t-sne-embedding.png
